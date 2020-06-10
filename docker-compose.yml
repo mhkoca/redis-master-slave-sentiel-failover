@@ -21,6 +21,19 @@ services:
       - "./slave.conf:/etc/redis.conf"
     depends_on:
       - redis-master
+      
+      
+  redis-slave2:
+    container_name: "redis-slave2"
+    image: redis
+    ports:
+      - "6381:6379"
+    command: "redis-server /etc/redis.conf"
+    volumes:
+      - "./data/slave:/data/"
+      - "./slave.conf:/etc/redis.conf"
+    depends_on:
+      - redis-master
 
   redis-sentinel:
     container_name: 'redis-sentinel'
@@ -33,3 +46,30 @@ services:
     depends_on:
       - redis-master
       - redis-slave
+      - redis-slave2
+
+  redis-sentinel2:
+    container_name: 'redis-sentinel2'
+    image: redis
+    ports:
+      - "26380:26379"
+    command: "redis-server /etc/sentinel.conf --sentinel"
+    volumes:
+      - "./sentinel.conf:/etc/sentinel.conf"
+    depends_on:
+      - redis-master
+      - redis-slave
+      - redis-slave2
+
+  redis-sentinel3:
+    container_name: 'redis-sentinel3'
+    image: redis
+    ports:
+      - "26381:26379"
+    command: "redis-server /etc/sentinel.conf --sentinel"
+    volumes:
+      - "./sentinel.conf:/etc/sentinel.conf"
+    depends_on:
+      - redis-master
+      - redis-slave
+      - redis-slave2
